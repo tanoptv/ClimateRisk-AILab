@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Climate Risk Line Bot — Prototype Presentation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Noto Sans Thai', sans-serif;
+    background: #1a1a2e;
+    color: #fff;
+    height: 100vh;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .deck { width: 100%; height: 100vh; position: relative; }
+
+  .slide {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    padding: 60px 80px;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 0; left: 0;
+    animation: fadeIn 0.3s ease;
+  }
+  .slide.active { display: flex; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== NAV ===== */
+  .nav {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 100;
+  }
+  .nav-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.2); }
+  .nav-counter { font-size: 13px; color: rgba(255,255,255,0.5); min-width: 60px; text-align: center; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.25); cursor: pointer; transition: background 0.2s; }
+  .dot.active { background: #a78bfa; }
+
+  /* ===== SLIDE 1: TITLE ===== */
+  .s1 { background: linear-gradient(135deg, #1a1a2e 0%, #2d1b69 100%); }
+  .s1 .label { font-size: 13px; color: #a78bfa; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+  .s1 h1 { font-size: 56px; font-weight: 700; color: #fff; line-height: 1.1; margin-bottom: 16px; }
+  .s1 .sub { font-size: 20px; color: rgba(255,255,255,0.6); margin-bottom: 50px; }
+  .s1 .tags { display: flex; gap: 12px; flex-wrap: wrap; }
+  .tag {
+    background: rgba(167,139,250,0.15);
+    border: 1px solid rgba(167,139,250,0.3);
+    color: #c4b5fd;
+    padding: 8px 18px;
+    border-radius: 100px;
+    font-size: 14px;
+  }
+
+  /* ===== SLIDE 2-5: QUESTIONS ===== */
+  .sq { background: #0f0f1a; }
+  .q-num { font-size: 100px; font-weight: 800; color: rgba(167,139,250,0.12); line-height: 1; margin-bottom: -20px; }
+  .q-title { font-size: 18px; color: #a78bfa; margin-bottom: 20px; font-weight: 400; }
+  .q-answer { font-size: 32px; font-weight: 600; color: #fff; margin-bottom: 32px; line-height: 1.3; }
+  .q-detail { font-size: 17px; color: rgba(255,255,255,0.6); line-height: 1.8; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .card.highlight { border-color: rgba(167,139,250,0.5); background: rgba(167,139,250,0.08); }
+  .card-label { font-size: 12px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .card-body { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.9; }
+  .check { color: #4ade80; margin-right: 8px; }
+  .cross { color: #f87171; margin-right: 8px; }
+
+  /* ===== SLIDE: AUTOMATE ===== */
+  .auto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 12px; }
+  .auto-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .auto-card.red { border-color: rgba(248,113,113,0.4); background: rgba(248,113,113,0.07); }
+  .auto-icon { font-size: 30px; margin-bottom: 12px; }
+  .auto-title { font-size: 17px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+  .auto-desc { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+  /* ===== SLIDE: IDEA ===== */
+  .idea-quote {
+    border-left: 4px solid #a78bfa;
+    padding-left: 28px;
+    margin: 28px 0;
+  }
+  .idea-quote p { font-size: 22px; color: rgba(255,255,255,0.85); line-height: 1.8; }
+  .stat-row { display: flex; gap: 16px; }
+  .stat {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 18px;
+    text-align: center;
+  }
+  .stat-val { font-size: 22px; font-weight: 700; color: #a78bfa; }
+  .stat-key { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+  /* ===== SLIDE: HIGHLIGHTS ===== */
+  .hl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+  .hl-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .hl-card.accent { border-color: rgba(167,139,250,0.45); background: rgba(167,139,250,0.07); }
+  .hl-q { font-size: 11px; color: #a78bfa; margin-bottom: 6px; }
+  .hl-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .hl-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.6; }
+
+  /* ===== SLIDE: TECH STACK ===== */
+  .tech-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-top: 16px; }
+  .tech-row { display: flex; align-items: flex-start; gap: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; }
+  .tech-row.accent { border-color: rgba(167,139,250,0.4); }
+  .tech-icon { font-size: 28px; flex-shrink: 0; }
+  .tech-name { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 3px; }
+  .tech-note { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide s1 active">
+    <div class="label">Advanced AI Engineering · Day 3 · Prototype</div>
+    <h1>Climate Risk<br>Line Bot</h1>
+    <div class="sub">ระบบ AI แจ้งเตือนความเสี่ยงภัยธรรมชาติสำหรับประชาชนทั่วไป</div>
+    <div class="tags">
+      <div class="tag">🇹🇭 77 จังหวัด</div>
+      <div class="tag">⚠️ 6 ประเภทภัย</div>
+      <div class="tag">🤖 Claude Haiku 4.5</div>
+      <div class="tag">💬 Line Bot</div>
+      <div class="tag">🐍 Python</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: INTERVIEW PART 1 -->
+  <div class="slide sq">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:6px;">
+      <div style="font-size:22px;font-weight:600;color:#fff;">Requirement Gathering</div>
+      <div style="font-size:14px;color:#a78bfa;">Grill-Me Interview Session · Q1–Q9</div>
+    </div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.4);margin-bottom:20px;">AI ถามทีละข้อเพื่อ get requirement ก่อนเริ่ม build</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q1 — ผู้ใช้คือใคร?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">ธุรกิจ / นักวิเคราะห์ / ประชาชน</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ ประชาชนทั่วไป</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q2 — ได้ประโยชน์อะไร?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">รู้ความเสี่ยง / ติดข่าว ESG / ราคาสินค้า</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ รู้ความเสี่ยงในพื้นที่ตัวเอง</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q3 — ครอบคลุมพื้นที่ไหน?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">บางภาค / ทั้งไทย / ทั่วโลก</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ ทั้งประเทศ 77 จังหวัด</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q4 — ประเภทภัยอะไรบ้าง?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">3 ประเภท / 6 ประเภท / ประเภทเดียว</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ 6 ประเภท (น้ำท่วม, PM2.5, ภัยแล้ง, พายุ, แผ่นดินไหว, ไฟป่า)</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q5 — ข้อมูลจาก API ไหน?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">Free APIs / Paid APIs / API ไทย</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Free APIs ทั้งหมด</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q6 — ทำงานบ่อยแค่ไหน?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">รายสัปดาห์ / รายวัน / real-time</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Real-time ทุกชั่วโมง</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q7 — ส่งผลลัพธ์ที่ไหน?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">Line / Web dashboard / Telegram / Email</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Line Bot</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q8 — Scheduler อะไร?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">APScheduler / cron / FastAPI</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ APScheduler</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q9 — ใช้ LLM ตัวไหน?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">Claude / GPT / Gemini / Local</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Claude Haiku 4.5</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SLIDE 7: INTERVIEW PART 2 -->
+  <div class="slide sq">
+    <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:6px;">
+      <div style="font-size:22px;font-weight:600;color:#fff;">Requirement Gathering</div>
+      <div style="font-size:14px;color:#a78bfa;">Grill-Me Interview Session · Q10–Q18</div>
+    </div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.4);margin-bottom:20px;">ทุกคำตอบกลายเป็น design decision ที่ชัดเจนก่อน build</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q10 — Risk scoring ยังไง?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">LLM ตัดสินเอง / threshold แข็ง / ผสม</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Hybrid: code + LLM อธิบาย</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q11 — ส่ง notification เมื่อไหร่?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">ทุกชั่วโมง / เฉพาะ score≥3 / daily+emergency</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Daily 7AM + ฉุกเฉินเมื่อ score=5</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q12 — เลือกจังหวัดยังไง?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">พิมพ์ใน Line / web UI / monitor ทุกจังหวัด</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ พิมพ์ชื่อจังหวัดใน Line chat</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q13 — เก็บข้อมูลที่ไหน?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">SQLite / PostgreSQL / JSON file</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ SQLite</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q14 — Deploy ที่ไหน?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">Local / Cloud VM / Raspberry Pi</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Local machine</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q15 — โครงสร้าง project?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">Layer-based / hazard-based / ไฟล์เดียว</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Layer-based (fetchers/scorer/llm/bot/db)</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q16 — Line webhook ยังไง?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">ngrok / cloud deploy / polling</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ ngrok tunnel</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q17 — Message format?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">plain text / Flex Message / รูปภาพ</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ Line Flex Message</div>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;">
+        <div style="font-size:11px;color:#a78bfa;margin-bottom:4px;">Q18 — Config management?</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:10px;">.env file / config.py / OS env vars</div>
+        <div style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);border-radius:8px;padding:7px 10px;font-size:13px;font-weight:600;color:#c4b5fd;">✓ .env + python-dotenv</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Q01 -->
+  <div class="slide sq">
+    <div class="q-num">01</div>
+    <div class="q-title">What kind of task do you need help with?</div>
+    <div class="q-answer">การติดตามและประเมินความเสี่ยงภัยธรรมชาติ</div>
+    <div class="q-detail" style="margin-bottom:24px;">ปัจจุบันถ้าอยากรู้ว่าจังหวัดตัวเองเสี่ยงน้ำท่วม, ฝุ่น PM2.5, หรือไฟป่าไหม ต้องเปิดหลายเว็บไซต์ (กรมอุตุ, AirVisual, กรมอุทกศาสตร์) แล้วตีความเองว่าอันตรายแค่ไหน</div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-label">ปัญหาปัจจุบัน</div>
+        <div class="card-body">
+          <div><span class="cross">✗</span>ต้องเปิดหลายเว็บ 4+ แหล่ง</div>
+          <div><span class="cross">✗</span>ตีความข้อมูลเองว่าอันตรายแค่ไหน</div>
+          <div><span class="cross">✗</span>ไม่มีการแจ้งเตือนเชิงรุก</div>
+          <div><span class="cross">✗</span>ข้อมูลกระจัดกระจาย ไม่มีจุดรวม</div>
+        </div>
+      </div>
+      <div class="card highlight">
+        <div class="card-label">โซลูชัน</div>
+        <div class="card-body">
+          <div><span class="check">✓</span>รวมข้อมูลจาก 4 APIs ในที่เดียว</div>
+          <div><span class="check">✓</span>AI ให้คะแนนความเสี่ยง 1–5 พร้อมเหตุผล</div>
+          <div><span class="check">✓</span>แจ้งเตือนอัตโนมัติเข้า Line</div>
+          <div><span class="check">✓</span>ครอบคลุมทั้ง 77 จังหวัดทั่วไทย</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Q02 -->
+  <div class="slide sq">
+    <div class="q-num">02</div>
+    <div class="q-title">What in your day-to-day could be simpler?</div>
+    <div class="q-answer">การรู้ว่าวันนี้ควรระวังอะไร</div>
+    <div class="q-detail" style="margin-bottom:24px;">แทนที่จะต้องไปหาข้อมูลเอง ระบบควรส่งสรุปมาให้ทุกเช้าใน Line ที่ใช้อยู่แล้ว พร้อม risk score 1–5 ที่เข้าใจได้ทันทีโดยไม่ต้องตีความ</div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-label">Before</div>
+        <div class="card-body">
+          เปิด AirVisual<br>
+          → เปิดกรมอุตุนิยมวิทยา<br>
+          → เปิดกรมอุทกศาสตร์<br>
+          → ตีความเองว่าเสี่ยงไหม<br>
+          → ไม่มีใครบอกให้เตรียมตัว
+        </div>
+      </div>
+      <div class="card highlight">
+        <div class="card-label">After</div>
+        <div class="card-body">
+          07:00 น. — Line ส่งสรุปมาให้เลย<br>
+          → ดูคะแนน 1–5 ทันที<br>
+          → AI อธิบายว่าทำไมถึงเสี่ยง<br>
+          → รู้ว่าควรทำอะไร เตรียมอะไร<br>
+          → ไม่ต้องหาข้อมูลเอง
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Q03 -->
+  <div class="slide sq">
+    <div class="q-num">03</div>
+    <div class="q-title">Which repetitive bits could be automated?</div>
+    <div class="auto-grid">
+      <div class="auto-card">
+        <div class="auto-icon">🔄</div>
+        <div class="auto-title">ดึงข้อมูลทุกชั่วโมง</div>
+        <div class="auto-desc">Open-Meteo, OpenAQ, USGS, NASA FIRMS — 4 APIs ทำงานอัตโนมัติทุกชั่วโมงตลอด 24 ชม.</div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-icon">📊</div>
+        <div class="auto-title">คำนวณ Risk Score 1–5</div>
+        <div class="auto-desc">Code ตรวจ threshold อัตโนมัติ → Claude Haiku อธิบายเหตุผลและบริบท</div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-icon">🌅</div>
+        <div class="auto-title">ส่ง Daily Summary 07:00 น.</div>
+        <div class="auto-desc">สรุปความเสี่ยงทุกจังหวัดที่ติดตามในรูปแบบ Line Flex Message ทุกเช้า</div>
+      </div>
+      <div class="auto-card red">
+        <div class="auto-icon">🚨</div>
+        <div class="auto-title">Emergency Alert ทันที</div>
+        <div class="auto-desc">เมื่อ Risk Score = 5 (วิกฤต) ระบบส่งแจ้งเตือนฉุกเฉินเข้า Line ทันที ไม่รอรายงานรายวัน</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Q04 -->
+  <div class="slide sq">
+    <div class="q-num">04</div>
+    <div class="q-title">How would you describe the idea clearly?</div>
+    <div class="idea-quote">
+      <p>"Line Bot ที่ดึงข้อมูลภัยธรรมชาติจาก 4 API ทุกชั่วโมง ให้ AI วิเคราะห์และให้คะแนนความเสี่ยง 1–5 แล้วส่งรายงานเข้า Line ทุกเช้า และแจ้งเตือนทันทีเมื่อเกิดเหตุวิกฤต — เพื่อให้ประชาชนทั่วไปรู้ความเสี่ยงในจังหวัดตัวเองโดยไม่ต้องหาข้อมูลเอง"</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-val">77</div><div class="stat-key">จังหวัดทั่วไทย</div></div>
+      <div class="stat"><div class="stat-val">6</div><div class="stat-key">ประเภทภัย</div></div>
+      <div class="stat"><div class="stat-val">1–5</div><div class="stat-key">Risk Score</div></div>
+      <div class="stat"><div class="stat-val">4</div><div class="stat-key">Free APIs</div></div>
+      <div class="stat"><div class="stat-val">24/7</div><div class="stat-key">Monitoring</div></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: KEY DESIGN HIGHLIGHTS -->
+  <div class="slide sq">
+    <div class="q-title" style="font-size:22px; font-weight:600; color:#fff; margin-bottom:6px;">Key Design Decisions</div>
+    <div class="q-detail" style="margin-bottom:20px;">จากการ Grill-Me Session — การตัดสินใจที่สำคัญ</div>
+    <div class="hl-grid">
+      <div class="hl-card accent">
+        <div class="hl-q">Q1 — ผู้ใช้ (Key Pivot)</div>
+        <div class="hl-title">ประชาชนทั่วไป</div>
+        <div class="hl-desc">เปลี่ยนจาก Business/Supply Chain มาเป็นคนทั่วไป — ทำให้ use case จริงกว่า</div>
+      </div>
+      <div class="hl-card accent">
+        <div class="hl-q">Q6 — Frequency</div>
+        <div class="hl-title">Real-time / ทุกชั่วโมง</div>
+        <div class="hl-desc">ภัยธรรมชาติเปลี่ยนเร็ว ไม่รอ weekly — ตรวจทุกชั่วโมง + alert ทันที</div>
+      </div>
+      <div class="hl-card accent">
+        <div class="hl-q">Q10 — Risk Scoring</div>
+        <div class="hl-title">Hybrid Scoring</div>
+        <div class="hl-desc">Code คำนวณ threshold → score 1-5 ส่งให้ Claude อธิบายเหตุผล ได้ทั้ง consistent + readable</div>
+      </div>
+      <div class="hl-card">
+        <div class="hl-q">Q4 — Hazard Types</div>
+        <div class="hl-title">6 ประเภทภัย</div>
+        <div class="hl-desc">น้ำท่วม · PM2.5 · ภัยแล้ง · พายุ · แผ่นดินไหว · ไฟป่า</div>
+      </div>
+      <div class="hl-card">
+        <div class="hl-q">Q5 — Data Sources</div>
+        <div class="hl-title">Free APIs ทั้งหมด</div>
+        <div class="hl-desc">Open-Meteo · OpenAQ · USGS · NASA FIRMS — ไม่มีค่าใช้จ่าย API</div>
+      </div>
+      <div class="hl-card">
+        <div class="hl-q">Q11 — Notification</div>
+        <div class="hl-title">2-Tier Alert</div>
+        <div class="hl-desc">Daily summary 07:00 น. + Emergency alert ทันทีเมื่อ score = 5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: TECH STACK -->
+  <div class="slide sq">
+    <div class="q-title" style="font-size:22px; font-weight:600; color:#fff; margin-bottom:6px;">Tech Stack</div>
+    <div class="q-detail" style="margin-bottom:20px;">เลือก Python แทน n8n — ควบคุมได้มากขึ้น เขียนเองทั้งหมด</div>
+    <div class="tech-grid">
+      <div class="tech-row">
+        <div class="tech-icon">🐍</div>
+        <div>
+          <div class="tech-name">Python + APScheduler</div>
+          <div class="tech-note">ระบบหลัก + scheduling ทุกชั่วโมง ใน process เดียว</div>
+        </div>
+      </div>
+      <div class="tech-row accent">
+        <div class="tech-icon">🤖</div>
+        <div>
+          <div class="tech-name">Claude Haiku 4.5</div>
+          <div class="tech-note">LLM วิเคราะห์และอธิบาย risk — เร็ว + ถูก เหมาะ hourly call</div>
+        </div>
+      </div>
+      <div class="tech-row">
+        <div class="tech-icon">💬</div>
+        <div>
+          <div class="tech-name">Line Bot SDK + Flex Message</div>
+          <div class="tech-note">ผู้ใช้พิมพ์จังหวัดใน chat รับ card UI สวยงาม</div>
+        </div>
+      </div>
+      <div class="tech-row">
+        <div class="tech-icon">🗄️</div>
+        <div>
+          <div class="tech-name">SQLite + .env</div>
+          <div class="tech-note">เก็บ users, risk log, alerts — เบา ไม่ต้อง setup server</div>
+        </div>
+      </div>
+      <div class="tech-row">
+        <div class="tech-icon">🌐</div>
+        <div>
+          <div class="tech-name">ngrok</div>
+          <div class="tech-note">Tunnel localhost → public HTTPS URL สำหรับ Line webhook</div>
+        </div>
+      </div>
+      <div class="tech-row">
+        <div class="tech-icon">📁</div>
+        <div>
+          <div class="tech-name">Layer-based Structure</div>
+          <div class="tech-note">fetchers / scorer / llm / bot / db — แต่ละ module มีหน้าที่เดียว</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav" id="nav"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const nav = document.getElementById('nav');
+  let cur = 0;
+  const total = slides.length;
+
+  function buildNav() {
+    nav.innerHTML = '';
+    const prev = document.createElement('button');
+    prev.className = 'nav-btn';
+    prev.textContent = '← Prev';
+    prev.onclick = () => go(cur - 1);
+    nav.appendChild(prev);
+
+    for (let i = 0; i < total; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === cur ? ' active' : '');
+      d.onclick = () => go(i);
+      nav.appendChild(d);
+    }
+
+    const counter = document.createElement('div');
+    counter.className = 'nav-counter';
+    counter.textContent = (cur + 1) + ' / ' + total;
+    nav.appendChild(counter);
+
+    const next = document.createElement('button');
+    next.className = 'nav-btn';
+    next.textContent = 'Next →';
+    next.onclick = () => go(cur + 1);
+    nav.appendChild(next);
+  }
+
+  function go(n) {
+    if (n < 0 || n >= total) return;
+    slides[cur].classList.remove('active');
+    cur = n;
+    slides[cur].classList.add('active');
+    buildNav();
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'ArrowDown') go(cur + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') go(cur - 1);
+  });
+
+  buildNav();
+</script>
+</body>
+</html>
