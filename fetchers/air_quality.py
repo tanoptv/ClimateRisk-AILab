@@ -26,8 +26,8 @@ def fetch_pm25(lat: float, lon: float) -> float:
                 values.append(float(value))
             except (TypeError, ValueError):
                 continue
-        return sum(values) / len(values) if values else 0
+        return sum(values) / len(values) if values else None
     except Exception as exc:
         print(f"PM2.5 fetch error: {exc}")
-        return 0
+        return None
 

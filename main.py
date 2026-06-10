@@ -34,6 +34,8 @@ def check_risks_for_province(
 
     results = []
     for hazard, (score, raw_value) in scores.items():
+        if score == 0:
+            continue
         explanation = analyze_risk(province, hazard, score, raw_value)
         database.save_risk_log(province, hazard, score, raw_value, explanation, db_path=db_path)
         results.append(

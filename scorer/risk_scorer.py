@@ -10,6 +10,7 @@ HAZARD_LABELS = {
 HAZARD_ORDER = ["flood", "pm25", "drought", "storm", "earthquake", "fire"]
 
 SCORE_COLORS = {
+    0: "#9ca3af",
     1: "#22c55e",
     2: "#a3e635",
     3: "#facc15",
@@ -18,6 +19,7 @@ SCORE_COLORS = {
 }
 
 SCORE_LABELS = {
+    0: "ไม่มีข้อมูล",
     1: "ปกติ",
     2: "เฝ้าระวัง",
     3: "ระวัง",
@@ -48,7 +50,9 @@ def score_flood(weather: dict) -> tuple[int, float]:
     return 1, precip
 
 
-def score_pm25(pm25_value: float) -> tuple[int, float]:
+def score_pm25(pm25_value: float | None) -> tuple[int, float]:
+    if pm25_value is None:
+        return 0, 0.0
     value = _number(pm25_value)
     if value >= 200:
         return 5, value

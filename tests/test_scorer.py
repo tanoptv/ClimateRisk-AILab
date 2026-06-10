@@ -13,6 +13,7 @@ def test_pm25_boundaries():
     assert score_pm25(49) == (1, 49)
     assert score_pm25(50) == (2, 50)
     assert score_pm25(200) == (5, 200)
+    assert score_pm25(None) == (0, 0.0)
 
 
 def test_drought_has_no_score_5():
