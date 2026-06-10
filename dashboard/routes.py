@@ -17,6 +17,11 @@ from db.database import (
 dashboard_blueprint = Blueprint("dashboard", __name__)
 
 
+@dashboard_blueprint.get("/")
+def index():
+    return redirect(url_for("dashboard.dashboard_home"))
+
+
 def _page(title: str, body: str) -> str:
     return f"""<!doctype html>
 <html lang="th">
