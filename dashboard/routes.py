@@ -4,6 +4,7 @@ import json
 from flask import Blueprint, current_app, redirect, url_for
 from flask import request
 
+from scorer.risk_scorer import SCORE_COLORS, SCORE_LABELS
 from db.database import (
     clear_preview_notifications,
     get_all_users,
@@ -68,15 +69,27 @@ def dashboard_home():
         for user_id, provinces in users
     ) or "<tr><td colspan='2'>No users yet</td></tr>"
 
+    def _score_bar(score: int) -> str:
+        color = SCORE_COLORS.get(score, "#9ca3af")
+        label = SCORE_LABELS.get(score, "?")
+        pct = score * 20
+        return (
+            f"<div style='display:flex;align-items:center;gap:6px'>"
+            f"<div style='width:{pct}%;min-width:6px;height:14px;background:{color};border-radius:3px'></div>"
+            f"<span style='color:{color};font-weight:600;font-size:13px'>{html.escape(label)}</span>"
+            f"</div>"
+        )
+
+    sorted_risks = sorted(risks, key=lambda r: r["score"], reverse=True)
     risk_rows = "".join(
         "<tr>"
         f"<td>{html.escape(row['province'])}</td>"
         f"<td>{html.escape(row['hazard_type'])}</td>"
-        f"<td>{row['score']}</td>"
+        f"<td style='min-width:160px'>{_score_bar(row['score'])}</td>"
         f"<td>{row['raw_value']}</td>"
         f"<td>{html.escape(row['checked_at'])}</td>"
         "</tr>"
-        for row in risks
+        for row in sorted_risks
     ) or "<tr><td colspan='5'>No risk logs yet</td></tr>"
 
     preview_rows = ""

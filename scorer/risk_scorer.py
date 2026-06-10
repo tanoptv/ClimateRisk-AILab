@@ -11,8 +11,8 @@ HAZARD_ORDER = ["flood", "pm25", "drought", "storm", "earthquake", "fire"]
 
 SCORE_COLORS = {
     0: "#9ca3af",
-    1: "#22c55e",
-    2: "#a3e635",
+    1: "#3b82f6",
+    2: "#22c55e",
     3: "#facc15",
     4: "#fb923c",
     5: "#ef4444",
