@@ -116,20 +116,19 @@ def dashboard_home():
 
     body = f"""
     <section>
-      <h2>Mode: <span class="badge">{html.escape(mode)}</span></h2>
-      <div class="actions">
-        <form method="post" action="{url_for('dashboard.run_hourly_check')}"><button>Run hourly check</button></form>
-        <form method="post" action="{url_for('dashboard.send_daily_summary')}"><button>Send daily summary</button></form>
-        <form method="post" action="{url_for('dashboard.clear_previews')}"><button class="secondary">Clear previews</button></form>
-      </div>
-    </section>
-    <section>
       <h2>Test Subscription</h2>
       <form method="post" action="{url_for('dashboard.save_test_subscription')}" class="actions">
         <input name="user_id" value="dashboard-user" aria-label="User ID">
         <input name="provinces" value="เชียงใหม่ กรุงเทพมหานคร" aria-label="Provinces">
         <button>Save test user</button>
       </form>
+    </section>
+    <section>
+      <h2>Mode: <span class="badge">{html.escape(mode)}</span></h2>
+      <div class="actions">
+        <form method="post" action="{url_for('dashboard.run_hourly_check')}"><button>Run hourly check</button></form>
+        <form method="post" action="{url_for('dashboard.send_daily_summary')}"><button>Send daily summary</button></form>
+      </div>
     </section>
     <section>
       <h2>Users</h2>
@@ -141,6 +140,11 @@ def dashboard_home():
     </section>
     <section>
       <h2>Notification Previews</h2>
+      <div class="actions" style="margin-bottom:12px">
+        <form method="post" action="{url_for('dashboard.clear_previews')}">
+          <button class="secondary" type="submit">Clear previews</button>
+        </form>
+      </div>
       {preview_rows}
     </section>
     """
