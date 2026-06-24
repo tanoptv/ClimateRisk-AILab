@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClimateRisk LINE Bot — Project Proposal | วิชาที่ 7</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #6B2FD9;
+      --purple-dark: #4C1D95;
+      --purple-light: #8B5CF6;
+      --purple-pale: #EDE9FE;
+      --purple-bg: #F5F3FF;
+      --dark: #1E1B4B;
+      --white: #FFFFFF;
+      --gray: #6B7280;
+      --gray-light: #F9FAFB;
+      --border: #E5E7EB;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Sarabun', 'Inter', sans-serif;
+      background: var(--gray-light);
+      color: var(--dark);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ─── IRIS header ─── */
+    .iris-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 40px; background: white; border-bottom: 1px solid var(--border);
+    }
+    .iris-logo { font-size: 18px; font-weight: 800; color: var(--purple); letter-spacing: -0.5px; }
+    .iris-nav { font-size: 12px; color: var(--gray); }
+
+    /* ─── Cover ─── */
+    .cover {
+      background: linear-gradient(135deg, #3B0764 0%, #6D28D9 45%, #A78BFA 80%, #C4B5FD 100%);
+      color: white; padding: 56px 48px;
+      position: relative; overflow: hidden; min-height: 300px; display: flex; align-items: center;
+    }
+    .cover .deco { position: absolute; font-size: 100px; color: rgba(255,255,255,0.06); font-weight: 900; }
+    .cover .deco1 { top: 10px; left: 20px; transform: rotate(20deg); }
+    .cover .deco2 { bottom: -30px; right: 60px; transform: rotate(-15deg); font-size: 140px; }
+    .cover .deco3 { top: 30%; right: 200px; transform: rotate(5deg); font-size: 60px; }
+    .cover-inner {
+      background: rgba(255,255,255,0.13);
+      backdrop-filter: blur(12px);
+      border-radius: 20px; padding: 38px 48px;
+      max-width: 860px; border: 1px solid rgba(255,255,255,0.22);
+      position: relative; z-index: 1;
+    }
+    .cover-badge {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.75); margin-bottom: 14px;
+    }
+    .cover-title { font-size: 38px; font-weight: 800; margin-bottom: 6px; line-height: 1.15; }
+    .cover-subtitle { font-size: 17px; color: rgba(255,255,255,0.88); margin-bottom: 22px; }
+    .cover-meta { display: flex; gap: 28px; flex-wrap: wrap; margin-bottom: 16px; }
+    .meta-item { font-size: 13px; color: rgba(255,255,255,0.9); }
+    .meta-label { font-weight: 700; }
+    .tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(255,255,255,0.18); color: white;
+      padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.28);
+    }
+
+    /* ─── Main layout ─── */
+    .main { max-width: 1100px; margin: 0 auto; padding: 36px 32px; display: flex; flex-direction: column; gap: 26px; }
+    .section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--purple); margin-bottom: 8px;
+    }
+
+    /* ─── Card ─── */
+    .card { background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .card-header {
+      background: var(--purple); color: white;
+      padding: 13px 24px; font-size: 15px; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-header.dark { background: var(--purple-dark); }
+    .card-header .num {
+      background: rgba(255,255,255,0.2); width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800; flex-shrink: 0;
+    }
+    .card-body { padding: 24px; }
+
+    /* ─── Pitch Flow ─── */
+    .pitch-flow { display: grid; grid-template-columns: repeat(5,1fr); background: white; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+    .pitch-step { padding: 20px 15px; border-right: 1px solid var(--border); position: relative; }
+    .pitch-step:last-child { border-right: none; }
+    .pitch-step-label { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: var(--purple); margin-bottom: 5px; }
+    .pitch-step-title { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 5px; }
+    .pitch-step-text { font-size: 12.5px; color: var(--gray); line-height: 1.5; }
+    .pitch-step:not(:last-child)::after { content: '→'; position: absolute; right: -9px; top: 50%; transform: translateY(-50%); font-size: 15px; color: var(--purple-light); background: white; padding: 2px 0; z-index: 1; }
+
+    /* ─── Fields ─── */
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label { font-size: 11px; font-weight: 700; color: var(--purple); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+    .field-value { font-size: 14px; color: var(--dark); background: var(--gray-light); border-radius: 6px; padding: 10px 14px; border: 1px solid var(--border); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* ─── Objectives ─── */
+    .obj-list { display: flex; flex-direction: column; gap: 10px; }
+    .obj-item { display: flex; align-items: flex-start; gap: 12px; background: var(--gray-light); border-radius: 8px; padding: 12px 16px; border: 1px solid var(--border); }
+    .obj-num { background: var(--purple); color: white; width: 26px; height: 26px; min-width: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+    .obj-text { font-size: 14px; color: var(--dark); line-height: 1.5; }
+
+    /* ─── Scope ─── */
+    .scope-grid { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .scope-col-header { padding: 11px 16px; font-size: 13px; font-weight: 700; color: white; }
+    .scope-in { background: var(--purple); }
+    .scope-out { background: #6B7280; }
+    .scope-col { padding: 16px; }
+    .scope-col-r { border-left: 1px solid var(--border); }
+    .scope-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; font-size: 13.5px; }
+    .scope-item:last-child { margin-bottom: 0; }
+
+    /* ─── AI table ─── */
+    .ai-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .ai-table th { background: var(--purple); color: white; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 12px; text-transform: uppercase; }
+    .ai-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .ai-table tr:last-child td { border-bottom: none; }
+    .ai-table tr:nth-child(even) td { background: var(--gray-light); }
+
+    /* ─── Flow pipe ─── */
+    .flow-pipe { display: grid; grid-template-columns: repeat(4,1fr); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 16px; }
+    .flow-cell { padding: 14px 12px; border-right: 1px solid var(--border); }
+    .flow-cell:last-child { border-right: none; }
+    .flow-header { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 6px; }
+    .flow-text { font-size: 13px; color: var(--dark); line-height: 1.45; }
+
+    /* ─── Info box ─── */
+    .info-box { background: var(--purple-pale); border: 1px solid #C4B5FD; border-radius: 8px; padding: 13px 16px; margin-top: 16px; font-size: 13px; color: var(--dark); }
+    .info-box strong { color: var(--purple); }
+
+    /* ─── Workflow steps ─── */
+    .wf-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    .wf-step { background: var(--gray-light); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+    .wf-num { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 4px; }
+    .wf-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+    .wf-text { font-size: 12.5px; color: var(--gray); line-height: 1.45; }
+
+    /* ─── Tech grid ─── */
+    .tech-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+    .tech-col { background: var(--gray-light); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .tech-head { background: var(--purple); color: white; padding: 10px 14px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .tech-body { padding: 12px 14px; font-size: 13px; color: var(--dark); line-height: 1.65; }
+    .api-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 14px; }
+    .api-box { background: var(--gray-light); border: 1px solid var(--border); border-radius: 6px; padding: 10px; text-align: center; }
+    .api-name { font-weight: 700; color: var(--purple); font-size: 13px; }
+    .api-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+    /* ─── Metrics ─── */
+    .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .metric-box { background: var(--gray-light); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .metric-label { font-size: 11px; font-weight: 700; color: var(--purple); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-item { display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; margin-bottom: 7px; }
+    .metric-item:last-child { margin-bottom: 0; }
+
+    /* ─── Timeline ─── */
+    .tl-grid { display: grid; grid-template-columns: repeat(4,1fr); }
+    .tl-col { border-right: 1px solid var(--border); }
+    .tl-col:last-child { border-right: none; }
+    .tl-head { background: var(--purple); color: white; padding: 10px 14px; font-size: 12px; font-weight: 700; text-align: center; line-height: 1.4; }
+    .tl-body { padding: 14px; font-size: 13px; color: var(--dark); }
+    .tl-item { display: flex; align-items: flex-start; gap: 7px; margin-bottom: 7px; line-height: 1.4; }
+    .tl-item:last-child { margin-bottom: 0; }
+
+    /* ─── Team table ─── */
+    .team-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .team-table th { background: var(--purple); color: white; padding: 10px 14px; text-align: left; font-weight: 700; font-size: 12px; }
+    .team-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); min-height: 44px; }
+    .team-table tr:last-child td { border-bottom: none; }
+    .team-table tr:nth-child(even) td { background: var(--gray-light); }
+    .team-empty { color: #D1D5DB; font-style: italic; font-size: 13px; }
+
+    /* ─── Scoring ─── */
+    .crit-list { display: flex; flex-direction: column; gap: 9px; }
+    .crit-item { display: flex; align-items: flex-start; gap: 14px; background: var(--gray-light); border-radius: 8px; padding: 13px 16px; border: 1px solid var(--border); }
+    .crit-pct { background: var(--purple); color: white; padding: 3px 11px; border-radius: 999px; font-size: 12px; font-weight: 800; white-space: nowrap; min-width: 48px; text-align: center; }
+    .crit-title { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+    .crit-desc { font-size: 13px; color: var(--gray); }
+
+    /* ─── Quote box ─── */
+    .quote-box {
+      background: linear-gradient(135deg, #3B0764 0%, #6D28D9 100%);
+      color: white; border-radius: 12px; padding: 30px 36px; text-align: center;
+    }
+    .quote-text { font-size: 16.5px; font-weight: 600; line-height: 1.75; margin-bottom: 10px; }
+    .quote-sub { font-size: 13px; color: rgba(255,255,255,0.68); }
+
+    @media print {
+      body { background: white; }
+      .iris-header { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- IRIS Header -->
+<div class="iris-header">
+  <div class="iris-logo">IRIS BOI-STEAM</div>
+  <div class="iris-nav">Subject 7: Advanced AI Engineering for IT &amp; Developer Teams &nbsp;·&nbsp; Project Pitching Template</div>
+</div>
+
+<!-- Cover -->
+<div class="cover">
+  <span class="deco deco1">✕</span>
+  <span class="deco deco2">✕</span>
+  <span class="deco deco3">✕</span>
+  <div class="cover-inner">
+    <div class="cover-badge">Project Pitching Template &nbsp;|&nbsp; วิชาที่ 7 · AI Engineering / LLM / RAG / AI Workflow</div>
+    <div class="cover-title">ClimateRisk LINE Bot</div>
+    <div class="cover-subtitle">ระบบ AI แจ้งเตือนความเสี่ยงภัยธรรมชาติสำหรับ User ทั่วไป</div>
+    <div class="cover-meta">
+      <div class="meta-item"><span class="meta-label">Project Topic: </span>AI-Powered Natural Disaster Risk Notification</div>
+      <div class="meta-item"><span class="meta-label">Topic No: </span>7</div>
+      <div class="meta-item"><span class="meta-label">Date: </span>17 / มิถุนายน / 2569</div>
+    </div>
+    <div class="tag-row">
+      <span class="tag">🇹🇭 77 จังหวัด</span>
+      <span class="tag">⚠️ 6 ประเภทภัย</span>
+      <span class="tag">🤖 Claude Haiku 4.5</span>
+      <span class="tag">💬 LINE Bot</span>
+      <span class="tag">🐍 Python</span>
+      <span class="tag">🆓 Free APIs Only</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ── Pitch Flow ── -->
+  <div>
+    <div class="section-label">Pitch Structure — โครงสร้างการนำเสนอ</div>
+    <div class="pitch-flow">
+      <div class="pitch-step">
+        <div class="pitch-step-label">Problem</div>
+        <div class="pitch-step-title">ต้องเปิดหลายเว็บ</div>
+        <div class="pitch-step-text">User ต้องเปิด 4+ แหล่ง แล้วตีความเองว่าอันตรายแค่ไหน ไม่มีระบบแจ้งเตือนเชิงรุก</div>
+      </div>
+      <div class="pitch-step">
+        <div class="pitch-step-label">Evidence</div>
+        <div class="pitch-step-title">4 Free Public APIs</div>
+        <div class="pitch-step-text">Open-Meteo, OpenAQ, USGS, NASA FIRMS — พิสูจน์ว่าข้อมูลมีอยู่จริง เข้าถึงได้ฟรี</div>
+      </div>
+      <div class="pitch-step">
+        <div class="pitch-step-label">Solution</div>
+        <div class="pitch-step-title">LINE Bot อัตโนมัติ</div>
+        <div class="pitch-step-text">รวมข้อมูล → AI Score 1–5 → LINE Flex Message ทุกเช้าและแจ้ง Emergency ทันที</div>
+      </div>
+      <div class="pitch-step">
+        <div class="pitch-step-label">Impact</div>
+        <div class="pitch-step-title">เวลาหาข้อมูล = 0</div>
+        <div class="pitch-step-text">ลดเวลา 15+ นาที/วัน → 0 · Alert &lt; 5 นาที · ครอบคลุม 77 จังหวัด 24/7</div>
+      </div>
+      <div class="pitch-step">
+        <div class="pitch-step-label">Next Step</div>
+        <div class="pitch-step-title">Deploy &amp; Expand</div>
+        <div class="pitch-step-text">Cloud Deploy · เพิ่มผู้ใช้จริง · เชื่อม API ไทยเพิ่ม · Mobile Dashboard</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 1. Project Overview ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">1</span> Project Overview — ภาพรวมโปรเจกต์</div>
+    <div class="card-body">
+      <div class="field">
+        <div class="field-label">Project Title</div>
+        <div class="field-value"><strong>ClimateRisk LINE Bot</strong> — ระบบ AI แจ้งเตือนความเสี่ยงภัยธรรมชาติสำหรับUser</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Project Description</div>
+        <div class="field-value">LINE Bot ที่ดึงข้อมูลภัยธรรมชาติ 6 ประเภทจาก 4 Free Public APIs ทุกชั่วโมง ให้ Claude Haiku 4.5 AI วิเคราะห์และให้คะแนนความเสี่ยง 1–5 พร้อมคำอธิบายภาษาไทย แล้วส่งรายงานสรุปเข้า LINE ทุกเช้า 07:00 น. และแจ้งเตือนฉุกเฉินทันทีเมื่อเกิดเหตุวิกฤต — เพื่อให้Userรู้ความเสี่ยงในจังหวัดตัวเองโดยไม่ต้องหาข้อมูลเอง</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Business Context</div>
+        <div class="field-value">Userในประเทศไทย ที่อาศัยหรือทำงานในพื้นที่เสี่ยงภัยธรรมชาติ และต้องการรับรู้สถานการณ์ความเสี่ยงในจังหวัดตัวเองแบบ Proactive โดยไม่ต้องเสียเวลาเปิดหลายเว็บไซต์และตีความข้อมูลดิบด้วยตัวเอง</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. Problem Statement ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">2</span> Problem Statement — ปัญหาที่ต้องการแก้ไข</div>
+    <div class="card-body">
+      <div class="field">
+        <div class="field-label">Current Problem</div>
+        <div class="field-value">การติดตามความเสี่ยงภัยธรรมชาติในปัจจุบันต้องเปิดหลายเว็บไซต์แยกกัน ได้แก่ กรมอุตุนิยมวิทยา, AirVisual, กรมอุทกศาสตร์ และ NASA FIRMS และต้องตีความข้อมูลดิบเองว่า "อันตรายแค่ไหน" — ไม่มีระบบรวมข้อมูล ไม่มีการให้คะแนนความเสี่ยง และไม่มีการแจ้งเตือนเชิงรุก</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Impact of Problem</div>
+        <div class="field-value">เสียเวลา 15–20 นาที/วัน ในการค้นหาข้อมูลจากหลายแหล่ง · ข้อมูลกระจัดกระจาย ไม่มีจุดรวม · Userไม่รู้ว่าควรเตรียมตัวหรือระวังอะไร · อาจเกิดความล่าช้าในการรับรู้สถานการณ์วิกฤต ซึ่งส่งผลต่อความปลอดภัยในชีวิตและทรัพย์สิน</div>
+      </div>
+      <div class="field">
+        <div class="field-label">Proposed Solution</div>
+        <div class="field-value">LINE Bot อัตโนมัติที่รวมข้อมูลภัยธรรมชาติ 6 ประเภทจาก 4 Free APIs ทุกชั่วโมง → ใช้ Hybrid AI Scoring (code threshold + Claude Haiku อธิบาย) ให้คะแนนความเสี่ยง 1–5 → ส่ง Daily Summary 07:00 น. และ Emergency Alert ทันทีเมื่อ score = 5 ผ่าน LINE Flex Message เข้า LINE ที่Userใช้อยู่แล้ว</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3. Objectives ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">3</span> Objectives — วัตถุประสงค์ (SMART Goals)</div>
+    <div class="card-body">
+      <div class="obj-list">
+        <div class="obj-item">
+          <div class="obj-num">1</div>
+          <div class="obj-text"><strong>ดึงข้อมูลอัตโนมัติ 24/7:</strong> ดึงข้อมูลภัยธรรมชาติ 6 ประเภทจาก 4 Free APIs ครบ 77 จังหวัดทั่วประเทศไทย ทุก 1 ชั่วโมง อย่างต่อเนื่อง โดยมี Uptime > 95% ต่อรอบ</div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-num">2</div>
+          <div class="obj-text"><strong>Risk Scoring แม่นยำ 100%:</strong> คำนวณ Risk Score 1–5 ด้วย threshold logic ที่กำหนดไว้ชัดเจน และให้ Claude Haiku AI อธิบายบริบทในภาษาไทยเมื่อ score ≥ 2 เพื่อให้เข้าใจง่ายโดยไม่ต้องตีความเอง</div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-num">3</div>
+          <div class="obj-text"><strong>Daily Summary ตรงเวลาทุกเช้า:</strong> ส่งรายงานสรุปภัยธรรมชาติทุกเช้า 07:00 น. (GMT+7) ผ่าน LINE Flex Message ครอบคลุมทุกจังหวัดที่ผู้ใช้ลงทะเบียนติดตาม</div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-num">4</div>
+          <div class="obj-text"><strong>Emergency Alert ภายใน &lt; 5 นาที:</strong> แจ้งเตือนฉุกเฉินทันทีเมื่อ Risk Score = 5 (ระดับวิกฤต) โดยไม่รอรายงานรายวัน เพื่อให้ผู้ใช้รับรู้และเตรียมตัวได้ทันเวลา</div>
+        </div>
+        <div class="obj-item">
+          <div class="obj-num">5</div>
+          <div class="obj-text"><strong>ลดเวลาหาข้อมูลจาก 15+ นาที → 0 นาที:</strong> ผู้ใช้ไม่ต้องค้นหาข้อมูลเองอีกต่อไป ระบบส่งสรุปความเสี่ยงพร้อมคะแนนและคำอธิบายมาให้ใน LINE โดยอัตโนมัติทุกวัน</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 4. Scope ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">4</span> Scope — ขอบเขตโปรเจกต์</div>
+    <div class="card-body">
+      <div class="scope-grid">
+        <div>
+          <div class="scope-col-header scope-in">✅ &nbsp;In Scope</div>
+          <div class="scope-col">
+            <div class="scope-item"><span style="color:#059669;font-size:16px">●</span>ครอบคลุม 77 จังหวัดทั่วประเทศไทย</div>
+            <div class="scope-item"><span style="color:#059669;font-size:16px">●</span>6 ประเภทภัย: น้ำท่วม, PM2.5, ภัยแล้ง, พายุ, แผ่นดินไหว, ไฟป่า</div>
+            <div class="scope-item"><span style="color:#059669;font-size:16px">●</span>ข้อมูลจาก Free Public APIs เท่านั้น</div>
+            <div class="scope-item"><span style="color:#059669;font-size:16px">●</span>แจ้งเตือนผ่าน LINE Bot + LINE Flex Message</div>
+            <div class="scope-item"><span style="color:#059669;font-size:16px">●</span>Web Dashboard สำหรับ Admin Monitor &amp; Control + Risk Map</div>
+            <div class="scope-item"><span style="color:#059669;font-size:16px">●</span>Pilot บน Local Machine ด้วย ngrok tunnel</div>
+            <div class="scope-item"><span style="color:#059669;font-size:16px">●</span>SQLite Database (ไม่ใช้ข้อมูล Production จริง)</div>
+          </div>
+        </div>
+        <div class="scope-col-r">
+          <div class="scope-col-header scope-out">❌ &nbsp;Out of Scope</div>
+          <div class="scope-col">
+            <div class="scope-item"><span style="color:#DC2626;font-size:16px">●</span>การส่งแจ้งเตือนผ่าน Email, SMS, Telegram</div>
+            <div class="scope-item"><span style="color:#DC2626;font-size:16px">●</span>Paid APIs หรือข้อมูล Real-time ระดับ Sub-hour</div>
+            <div class="scope-item"><span style="color:#DC2626;font-size:16px">●</span>การ Deploy บน Cloud Server (Production)</div>
+            <div class="scope-item"><span style="color:#DC2626;font-size:16px">●</span>ข้อมูลส่วนตัวหรือ Sensitive Data</div>
+            <div class="scope-item"><span style="color:#DC2626;font-size:16px">●</span>Mobile App (รองรับเฉพาะ LINE)</div>
+            <div class="scope-item"><span style="color:#DC2626;font-size:16px">●</span>ข้อมูลภัยธรรมชาตินอกประเทศไทย</div>
+            <div class="scope-item"><span style="color:#DC2626;font-size:16px">●</span>Predictive Analytics / ML Forecasting</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 5. AI Components ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">5</span> AI / LLM Components — องค์ประกอบของระบบ AI</div>
+    <div class="card-body">
+      <table class="ai-table">
+        <thead>
+          <tr>
+            <th>LLM Model Used</th>
+            <th>RAG / Knowledge Base</th>
+            <th>Agent / Workflow</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Claude Haiku 4.5</strong> (Anthropic)<br><small style="color:#6B7280">เรียกเฉพาะเมื่อ Risk Score ≥ 2<br>เพื่ออธิบายบริบทในภาษาไทยที่เข้าใจง่าย</small></td>
+            <td><strong>ไม่ใช้ RAG</strong><br><small style="color:#6B7280">ใช้ Real-time API Data โดยตรง<br>ข้อมูลสดจาก 4 APIs ทุก 1 ชั่วโมง</small></td>
+            <td><strong>APScheduler Pipeline</strong><br><small style="color:#6B7280">Hourly fetch → Score → LLM → Notify<br>Emergency trigger อัตโนมัติเมื่อ score = 5</small></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="flow-pipe">
+        <div class="flow-cell">
+          <div class="flow-header">📥 Input</div>
+          <div class="flow-text">ข้อมูลดิบจาก 4 APIs: สภาพอากาศ, ฝุ่น PM2.5, แผ่นดินไหว, จุดไฟป่า — แยกรายจังหวัดทั่วไทย</div>
+        </div>
+        <div class="flow-cell">
+          <div class="flow-header">⚙️ AI Processing</div>
+          <div class="flow-text">Code คำนวณ Risk Score 1–5 ด้วย threshold → Claude Haiku อธิบายบริบทเฉพาะ score ≥ 2</div>
+        </div>
+        <div class="flow-cell">
+          <div class="flow-header">📤 Output</div>
+          <div class="flow-text">Risk Score + คำอธิบาย AI → LINE Flex Message (Daily Summary / Emergency Alert)</div>
+        </div>
+        <div class="flow-cell">
+          <div class="flow-header">👤 Human Review</div>
+          <div class="flow-text">ไม่มี (Fully Automated) ผู้ใช้รับรายงานสำเร็จรูปใน LINE ไม่ต้องตีความเอง</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <strong>Hallucination / Risk Mitigation:</strong> ใช้ Hybrid Scoring — <strong>Code-based threshold กำหนด Risk Score ก่อนเสมอ</strong> Claude Haiku ถูกเรียกเฉพาะเพื่อ "อธิบายเหตุผล" เท่านั้น ไม่ได้ใช้ AI ตัดสินคะแนน → ลด Hallucination Risk และรับประกัน Consistency 100%
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. Workflow ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">6</span> Workflow / Architecture — ขั้นตอนการทำงาน (Input → Process → Output)</div>
+    <div class="card-body">
+      <div class="wf-grid">
+        <div class="wf-step">
+          <div class="wf-num">Step 1 — Scheduler</div>
+          <div class="wf-title">APScheduler Trigger</div>
+          <div class="wf-text">ทำงานทุก 1 ชั่วโมง (hourly check) และ 07:00 น. ทุกวัน (daily summary) โดยอัตโนมัติ 24/7 ตลอดเวลา</div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-num">Step 2 — Fetch</div>
+          <div class="wf-title">API Data Fetchers</div>
+          <div class="wf-text">ดึงข้อมูลจาก Open-Meteo, OpenAQ, USGS, NASA FIRMS สำหรับทุกจังหวัดที่มีผู้ใช้ติดตาม</div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-num">Step 3 — Score</div>
+          <div class="wf-title">Risk Scorer (Threshold)</div>
+          <div class="wf-text">risk_scorer.py คำนวณ Risk Score 1–5 แยกตาม 6 hazard types และบันทึกผลลง SQLite</div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-num">Step 4 — AI</div>
+          <div class="wf-title">Claude Haiku Analysis</div>
+          <div class="wf-text">analyzer.py เรียก Claude Haiku เฉพาะเมื่อ score ≥ 2 สร้างคำอธิบายบริบทและคำแนะนำภาษาไทย</div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-num">Step 5 — Check</div>
+          <div class="wf-title">Emergency Detection</div>
+          <div class="wf-text">ตรวจสอบ score = 5 (วิกฤต) → Trigger Emergency Alert ทันที โดยไม่รอ Daily Summary 07:00 น.</div>
+        </div>
+        <div class="wf-step">
+          <div class="wf-num">Step 6 — Notify</div>
+          <div class="wf-title">LINE Bot Delivery</div>
+          <div class="wf-text">line_bot.py ส่ง LINE Flex Message รายงาน/แจ้งเตือนเข้า LINE ของผู้ใช้ที่ลงทะเบียนทุกคน</div>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>Architecture Notes:</strong> Layer-based — fetchers/ · scorer/ · llm/ · bot/ · db/ · dashboard/ · Hybrid scoring รับประกัน Consistency + ให้ Readability · ngrok tunnel สำหรับ LINE Webhook บน Local Machine
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 7. Tools ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">7</span> Tools &amp; Technologies</div>
+    <div class="card-body">
+      <div class="tech-grid">
+        <div class="tech-col">
+          <div class="tech-head">Programming Language</div>
+          <div class="tech-body">Python 3.x<br><small style="color:#9CA3AF">Fetchers, Scorer, LLM Analyzer, Bot, Dashboard</small></div>
+        </div>
+        <div class="tech-col">
+          <div class="tech-head">Database / Storage</div>
+          <div class="tech-body">SQLite<br><small style="color:#9CA3AF">4 tables: users, risk_log, alerts_sent, preview_notifications</small></div>
+        </div>
+        <div class="tech-col">
+          <div class="tech-head">Frameworks / Libraries</div>
+          <div class="tech-body">Flask · APScheduler<br>anthropic SDK<br>line-bot-sdk<br>python-dotenv · requests</div>
+        </div>
+        <div class="tech-col">
+          <div class="tech-head">Visualization / Output</div>
+          <div class="tech-body">LINE Flex Message<br>Web Dashboard (Flask)<br>Leaflet.js Risk Map<br><small style="color:#9CA3AF">Interactive Thailand map</small></div>
+        </div>
+      </div>
+      <div class="field-label" style="margin-top: 16px;">Data Sources — Free Public APIs (ไม่มีค่าใช้จ่าย)</div>
+      <div class="api-grid">
+        <div class="api-box">
+          <div class="api-name">Open-Meteo</div>
+          <div class="api-sub">น้ำท่วม · พายุ · ภัยแล้ง</div>
+        </div>
+        <div class="api-box">
+          <div class="api-name">OpenAQ</div>
+          <div class="api-sub">ฝุ่น PM2.5</div>
+        </div>
+        <div class="api-box">
+          <div class="api-name">USGS</div>
+          <div class="api-sub">แผ่นดินไหว</div>
+        </div>
+        <div class="api-box">
+          <div class="api-name">NASA FIRMS</div>
+          <div class="api-sub">ไฟป่า</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 8. Expected Outcomes ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">8</span> Expected Outcomes — ผลลัพธ์ที่คาดหวัง</div>
+    <div class="card-body">
+      <div class="metrics-grid">
+        <div class="metric-box">
+          <div class="metric-label">Deliverables — สิ่งที่จะส่งมอบ</div>
+          <div class="metric-item"><span>🤖</span>LINE Bot ทำงานอัตโนมัติ 24/7 สำหรับผู้ใช้ทดสอบ</div>
+          <div class="metric-item"><span>📊</span>Web Dashboard (Flask + Leaflet.js) สำหรับ Admin Monitor Risk Map</div>
+          <div class="metric-item"><span>📨</span>LINE Flex Message: Daily Summary + Emergency Alert templates</div>
+          <div class="metric-item"><span>💾</span>SQLite Database พร้อม Risk Log ย้อนหลัง</div>
+          <div class="metric-item"><span>📋</span>Source Code + README Documentation</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Success Metrics — KPI วัดผล</div>
+          <div class="metric-item"><span>✅</span>API fetch success rate &gt; 95% ต่อรอบ</div>
+          <div class="metric-item"><span>✅</span>Risk Score ถูกต้องตาม threshold specification 100%</div>
+          <div class="metric-item"><span>✅</span>Emergency Alert ส่งภายใน &lt; 5 นาที (เมื่อ score = 5)</div>
+          <div class="metric-item"><span>✅</span>Daily Summary ส่งตรงเวลา 07:00 น. ทุกวัน</div>
+          <div class="metric-item"><span>✅</span>เวลาหาข้อมูลผู้ใช้: 15+ นาที/วัน → 0 นาที</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 9. Timeline ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">9</span> Timeline — แผนการดำเนินงาน</div>
+    <div class="card-body" style="padding: 0;">
+      <div class="tl-grid">
+        <div class="tl-col">
+          <div class="tl-head">สัปดาห์ที่ 1–2<br>Foundation</div>
+          <div class="tl-body">
+            <div class="tl-item"><span>📋</span>Requirement gathering (AI Grill-Me)</div>
+            <div class="tl-item"><span>🧪</span>API testing (4 Free APIs)</div>
+            <div class="tl-item"><span>🗄️</span>Database schema design</div>
+            <div class="tl-item"><span>📁</span>Project structure setup</div>
+          </div>
+        </div>
+        <div class="tl-col">
+          <div class="tl-head">สัปดาห์ที่ 3–4<br>Core Engine</div>
+          <div class="tl-body">
+            <div class="tl-item"><span>🌐</span>API Fetchers (weather, air, quake, fire)</div>
+            <div class="tl-item"><span>📊</span>Risk Scorer (threshold logic)</div>
+            <div class="tl-item"><span>🤖</span>Claude Haiku integration</div>
+            <div class="tl-item"><span>⏰</span>APScheduler setup &amp; testing</div>
+          </div>
+        </div>
+        <div class="tl-col">
+          <div class="tl-head">สัปดาห์ที่ 5–6<br>Bot &amp; Alerts</div>
+          <div class="tl-body">
+            <div class="tl-item"><span>💬</span>LINE Bot webhook (ngrok)</div>
+            <div class="tl-item"><span>📨</span>LINE Flex Message templates</div>
+            <div class="tl-item"><span>🚨</span>Emergency alert system</div>
+            <div class="tl-item"><span>🗺️</span>Web Dashboard + Leaflet.js map</div>
+          </div>
+        </div>
+        <div class="tl-col">
+          <div class="tl-head">สัปดาห์ที่ 7–8<br>Testing &amp; Demo</div>
+          <div class="tl-body">
+            <div class="tl-item"><span>🧪</span>End-to-end testing</div>
+            <div class="tl-item"><span>🐛</span>Bug fixes &amp; optimization</div>
+            <div class="tl-item"><span>🎯</span>Pilot demo (LINE Bot live)</div>
+            <div class="tl-item"><span>📝</span>Documentation &amp; Pitching</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 10. Team Members ── -->
+  <div class="card">
+    <div class="card-header"><span class="num">10</span> Team Members — สมาชิกในกลุ่ม</div>
+    <div class="card-body" style="padding: 0;">
+      <table class="team-table">
+        <thead>
+          <tr>
+            <th style="width:44px">#</th>
+            <th>ชื่อ - นามสกุล</th>
+            <th>รหัสนักศึกษา / Employee ID</th>
+            <th>บทบาทใน Project</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+            <td>Project Lead · Full-stack Developer · AI Integration</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+            <td><span class="team-empty">—</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── Scoring Criteria ── -->
+  <div class="card">
+    <div class="card-header dark">AWARD &amp; PRIZE STANDARD — เกณฑ์การประเมิน (1 = น้อยที่สุด · 5 = มากที่สุด)</div>
+    <div class="card-body">
+      <p style="font-size:13px;color:var(--gray);margin-bottom:16px">ให้คะแนนจากความชัดเจน ความเป็นไปได้ คุณค่า และการสื่อสาร เพื่อรับ <strong style="color:var(--purple)">HIGH POTENTIAL PROJECT AWARD</strong></p>
+      <div class="crit-list">
+        <div class="crit-item">
+          <span class="crit-pct">25%</span>
+          <div>
+            <div class="crit-title">1. Problem &amp; Opportunity Fit</div>
+            <div class="crit-desc">ปัญหาชัดเจน: Userต้องเปิด 4+ เว็บ + ตีความข้อมูลดิบเองทุกวัน → เสี่ยงต่อการรับรู้ข้อมูลวิกฤตล่าช้า สอดคล้องกับการใช้งานจริงของUserทุกจังหวัด</div>
+          </div>
+        </div>
+        <div class="crit-item">
+          <span class="crit-pct">25%</span>
+          <div>
+            <div class="crit-title">2. Solution Design &amp; Practicality</div>
+            <div class="crit-desc">Hybrid AI Scoring (code + LLM) · APScheduler pipeline ที่ชัดเจน · LINE Bot delivery · Local pilot พัฒนาสำเร็จแล้ว ใช้งานได้จริงทันที</div>
+          </div>
+        </div>
+        <div class="crit-item">
+          <span class="crit-pct">25%</span>
+          <div>
+            <div class="crit-title">3. Business / Operational Value</div>
+            <div class="crit-desc">ลดเวลาหาข้อมูล 15+ นาที/วัน → 0 · แจ้งเตือนวิกฤตก่อนเกิดความเสียหาย · ช่วยตัดสินใจเตรียมตัวรับมือภัยธรรมชาติได้ดีขึ้น ครอบคลุม 77 จังหวัด 24/7</div>
+          </div>
+        </div>
+        <div class="crit-item">
+          <span class="crit-pct">15%</span>
+          <div>
+            <div class="crit-title">4. Evidence, Feasibility &amp; Implementation Plan</div>
+            <div class="crit-desc">4 Free APIs พร้อมใช้งาน (พิสูจน์แล้ว) · Source Code + Dashboard Pilot พัฒนาสำเร็จ · Timeline 8 สัปดาห์ชัดเจน · ไม่ใช้ข้อมูล sensitive หรือ production จริง</div>
+          </div>
+        </div>
+        <div class="crit-item">
+          <span class="crit-pct">10%</span>
+          <div>
+            <div class="crit-title">5. Presentation Clarity &amp; Engagement</div>
+            <div class="crit-desc">โครงสร้าง Problem → Evidence → Solution → Impact → Next Step · ภาษา Business ก่อน Technical · One-page pitch ที่ผู้บริหารเข้าใจได้ทันที</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quote ── -->
+  <div class="quote-box">
+    <div class="quote-text">
+      "ClimateRisk LINE Bot แก้ปัญหา: Userต้องเปิด 4+ เว็บหาข้อมูลเองทุกวัน<br>
+      ใช้ข้อมูลจาก 4 Free APIs · วัดผลด้วย Risk Score 1–5 และ Alert Response Time<br>
+      สร้างผลกระทบ: ลดเวลา 15+ นาที/วัน → 0 · แจ้งเตือนวิกฤตภายใน &lt; 5 นาที"
+    </div>
+    <div class="quote-sub">ต้องการให้อาจารย์/ผู้บริหารประเมิน: ความเป็นไปได้ในการ Deploy จริง และการขยายผลสู่ระบบ Production เต็มรูปแบบ</div>
+  </div>
+
+</div>
+</body>
+</html>
